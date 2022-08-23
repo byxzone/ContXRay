@@ -13,7 +13,6 @@
     - [容器内文件打开](#容器内文件打开)
     - [容器间互访](#容器间互访)
   - [Promethus/Grafana数据可视化](#Promethus/Grafana数据可视化)
-  - [Seccomp Docker Profile生成](#Seccomp Docker Profile生成)
   - [容器异常检测算法](#容器异常检测算法)
   - [参考资料](#参考资料)
 
