@@ -26,6 +26,7 @@ ContXRay是一个基于eBPF技术的容器行为观测工具。
 
 为了帮助解决上述问题，我们基于Linux内核中的eBPF技术，打造了一个可以动态观测容器行为的工具**ContXRay**。通过eBPF技术，ContXRay可以实现对容器的无侵入式的动态观测，包括容器所使用的系统调用、对文件的访问、进程的执行、容器间网络互访等，收集到的信息经过分析后可通过Seccomp等工具对容器进行更细粒度的权限控制，从而最大程度降低攻击平面，保证容器的运行安全。
 
+**本项目正在基于 libbpf 进行重构，以下文档是基于 `bcc_version` 编写的**
 
 ## Get Started
 
@@ -35,10 +36,10 @@ ContXRay是一个基于eBPF技术的容器行为观测工具。
 sudo apt-get install bpfcc-tools linux-headers-$(uname -r)
 ```
 
-- 项目程序目录为`src`，以下操作均需要在此目录操作
+- bcc版本项目程序目录为`bcc_version`，以下操作均需要在此目录操作
 
 ```
-cd src
+cd bcc_version
 ```
 
 - 安装所需的python依赖模块：
@@ -104,12 +105,12 @@ sudo docker run -itd -p 3000:3000 grafana
 ```
 
 - 配置Grafana数据源，添加Promethus源，url为http://host_ip:9090
-- 导入Grafana Dashboard配置文件`./src/grafana_panel_json.txt`
+- 导入Grafana Dashboard配置文件`./bcc_version/grafana_panel_json.txt`
 
 - 在启动ContXRay之后，运行`pr_exp.py`
 
 ```
-cd src
+cd bcc_version
 sudo python3 ./pr_exp.py
 ```
 
@@ -122,7 +123,7 @@ sudo python3 ./pr_exp.py
 ├── docs                        相关文档
 ├── LICENSE                     LICENSE
 ├── README.md                   README
-└── src                         source code
+└── bcc_version                         source code
     ├── bpf.c                   eBPF C程序
     ├── clearlog.sh             清除历史日志shell脚本
     ├── contxray.py             ContXRay主程序
