@@ -19,6 +19,10 @@
 #define FULL_MAX_ARGS_ARR (TOTAL_MAX_ARGS * ARGSIZE)
 #define LAST_ARG (FULL_MAX_ARGS_ARR - ARGSIZE)
 
+enum event_type{ 
+	exec = 1 
+};
+
 struct syscall_key_t{
     u32  id;
     char cid[CONTAINER_ID_SHORT_LEN];

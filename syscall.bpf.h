@@ -13,7 +13,7 @@ handle_sys_enter(struct trace_event_raw_sys_enter *ctx){
     value = bpf_map_lookup_or_try_init(&syscall_count_map,&key,&zero);
     if(!value) return 0;
     (*value)++;
-    bpf_printk("%s,%u:%u",key.cid,key.id,*value);
+    //bpf_printk("%s,%u:%u",key.cid,key.id,*value);
     return 0;
 }
 

@@ -21,6 +21,9 @@ handle_sys_enter_execve(struct trace_event_raw_sys_enter* ctx){
 
     struct exec_event *event;
     event = bpf_ringbuf_reserve(&rb, sizeof(*event), 0);
+	if(event == NULL)
+		return 0;
+	event->common.type = exec;
 	event->common.pid = tgid;
 	event->common.ppid = (pid_t)BPF_CORE_READ(task, real_parent, tgid);
 	event->args_count = 0;
@@ -41,22 +44,18 @@ handle_sys_enter_execve(struct trace_event_raw_sys_enter* ctx){
 	for (int i = 1; i < TOTAL_MAX_ARGS && i < max_args; i++) {
 		bpf_probe_read_user(&argp, sizeof(argp), &args[i]);
 		if (!argp)
-			return 0;
+			break;
 
 		if (event->args_size > LAST_ARG)
-			return 0;
+			break;
 
 		ret = bpf_probe_read_user_str(&event->args[event->args_size], ARGSIZE, argp);
 		if (ret > ARGSIZE)
-			return 0;
+			break;
 
 		event->args_count++;
 		event->args_size += ret;
 	}
-	/* try to read one more argument to check if there is one */
-	bpf_probe_read_user(&argp, sizeof(argp), &args[max_args]);
-	if (!argp)
-		return 0;
 
 	/* pointer to max_args+1 isn't null, asume we have more arguments */
 	event->args_count++;

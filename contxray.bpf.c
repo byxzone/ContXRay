@@ -12,7 +12,7 @@
 #include "syscall.bpf.h"
 #include "exec.bpf.h"
 
-
+   
 SEC("tracepoint/raw_syscalls/sys_enter")
 int tracepoint__raw_syscalls__sys_enter(struct trace_event_raw_sys_enter *ctx)
 {

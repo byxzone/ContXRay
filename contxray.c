@@ -12,34 +12,12 @@
 #include "contxray.h"
 #include "contxray.skel.h"
 
-#include "res/syscall_tbl.h"
+#include "common.h"
+#include "csyscall.h"
+#include "exec.h"
 
-char logo[] = " \n \
-   _____            _  __   _______              \n \
-  / ____|          | | \\ \\ / /  __ \\             \n \
- | |     ___  _ __ | |_ \\ V /| |__) |__ _ _   _  \n \
- | |    / _ \\| '_ \\| __| > < |  _  // _` | | | | \n \
- | |___| (_) | | | | |_ / . \\| | \\ \\ (_| | |_| | \n \
-  \\_____\\___/|_| |_|\\__/_/ \\_\\_|  \\_\\__,_|\\__, | \n \
-                                           __/ | \n \
-                                          |___/  \n ";
 
 struct contxray_bpf *skel;
-
-static struct env {
-	bool verbose;
-	long min_duration_ms;
-} env;
-
-const char *argp_program_version = "contxray 0.1";
-const char *argp_program_bug_address = "<i@barryx.cn>";
-const char argp_program_doc[] = " ";
-
-static const struct argp_option opts[] = {
-	{ "verbose", 'v', NULL, 0, "Verbose debug output" },
-	{ "duration", 'd', "DURATION-MS", 0, "Minimum process duration (ms) to report" },
-	{},
-};
 
 static error_t parse_arg(int key, char *arg, struct argp_state *state)
 {
@@ -70,6 +48,7 @@ static const struct argp argp = {
 	.doc = argp_program_doc,
 };
 
+
 static int libbpf_print_fn(enum libbpf_print_level level, const char *format, va_list args)
 {
 	if (level == LIBBPF_DEBUG && !env.verbose)
@@ -77,33 +56,24 @@ static int libbpf_print_fn(enum libbpf_print_level level, const char *format, va
 	return vfprintf(stderr, format, args);
 }
 
-static volatile bool exiting = false;
 
 static void sig_handler(int sig)
 {
 	exiting = true;
 }
 
-static int handle_syscall_count_map(const struct bpf_map *map){
-	struct syscall_key_t *cur_key = NULL;
-	struct syscall_key_t next_key;
-	int ret = 0;
-	while(ret == 0){
-		ret = bpf_map__get_next_key(map, &cur_key,&next_key, sizeof(struct syscall_key_t));
-		if(ret != 0) break;
-		int value;
-		printf("%s,%s",next_key.cid,syscall_trans_to_name(x86_64,next_key.id));
-		bpf_map__lookup_and_delete_elem(map, &next_key, sizeof(struct syscall_key_t), &value,sizeof(u32), 0);
-		printf(":%u\n",value);
-		cur_key = &next_key;
-		
-	}
-	return 0;
-}
-
+ 
 static int handle_event(void *ctx, void *data, size_t data_sz)
 {
-	
+	struct common_event *common = (struct common_event *)data;\
+	printf("[event]cid:%s,comm:%s,pid:%d,ppid:%d\n",
+		common->cid,common->comm,common->pid,common->ppid);
+	switch(common->type){
+		case exec:
+			return handle_exec_event((struct exec_event *)data);
+		default:
+			break;
+	};
 	return 0;
 }
 
