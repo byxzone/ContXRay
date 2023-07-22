@@ -1,0 +1,1 @@
+clang -target bpf -g -c -o contxray.bpf.o contxray.bpf.c -I ./vmlinux/x86/ -I -I./libbpf/include/uapi -I ./.output/
