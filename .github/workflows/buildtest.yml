@@ -23,6 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install Docker and Create a test container
+        run: |
+          curl -fsSL https://test.docker.com -o test-docker.sh
+          sudo sh test-docker.sh
+          sudo docker pull ubuntu
+          sudo docker run -itd --name ubuntu ubuntu
+
       - name: Install dependencies and Init Env
         run: |
           sudo apt install libbpf-dev clang llvm libelf-dev libpcap-dev gcc-multilib build-essential
@@ -31,4 +38,9 @@ jobs:
       - name: Build and Run
         run: |
           make -j$(nproc) contxray
-          sudo ./contxray -t 2
+          sudo ./contxray -t 5 > result.txt
+          sudo docker exec -it ubuntu bash
+          bash
+          exit
+          sleep 5
+          cat ./result.txt
