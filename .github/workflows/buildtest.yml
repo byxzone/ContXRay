@@ -38,7 +38,7 @@ jobs:
       - name: Build and Run
         run: |
           make -j$(nproc) contxray
-          sudo ./contxray -t 3 > result.txt
-          curl localhost
-          sleep 3
+          sudo ./contxray -t 5 > result.txt &
+          curl localhost 2> /dev/null &
+          sleep 5
           cat ./result.txt
