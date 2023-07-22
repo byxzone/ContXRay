@@ -27,8 +27,8 @@ jobs:
         run: |
           curl -fsSL https://test.docker.com -o test-docker.sh
           sudo sh test-docker.sh
-          sudo docker pull ubuntu
-          sudo docker run -itd --name ubuntu ubuntu
+          sudo docker pull nginx
+          sudo docker run -itd -p 80:80 --name nginx nginx
 
       - name: Install dependencies and Init Env
         run: |
@@ -38,9 +38,7 @@ jobs:
       - name: Build and Run
         run: |
           make -j$(nproc) contxray
-          sudo ./contxray -t 5 > result.txt
-          sudo docker exec -it ubuntu bash
-          bash
-          exit
-          sleep 5
+          sudo ./contxray -t 3 > result.txt
+          curl localhost
+          sleep 3
           cat ./result.txt
