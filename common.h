@@ -21,7 +21,7 @@ const char argp_program_doc[] = " ";
 
 static const struct argp_option opts[] = {
 	{ "verbose", 'v', NULL, 0, "Verbose debug output" },
-	{ "duration", 'd', "DURATION-MS", 0, "Minimum process duration (ms) to report" },
+	{ "time", 't', "TIME-SEC", 0, "Max Running Time(0 for infinite)" },
 	{},
 };
 

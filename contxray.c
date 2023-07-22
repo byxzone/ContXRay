@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
 
@@ -22,16 +23,12 @@ struct contxray_bpf *skel;
 static error_t parse_arg(int key, char *arg, struct argp_state *state)
 {
 	switch (key) {
+	case 't':
+		long time = strtol(arg, NULL, 10);
+		if(time) alarm(time);
+		break;
 	case 'v':
 		env.verbose = true;
-		break;
-	case 'd':
-		errno = 0;
-		env.min_duration_ms = strtol(arg, NULL, 10);
-		if (errno || env.min_duration_ms <= 0) {
-			fprintf(stderr, "Invalid duration: %s\n", arg);
-			argp_usage(state);
-		}
 		break;
 	case ARGP_KEY_ARG:
 		argp_usage(state);
@@ -94,6 +91,7 @@ int main(int argc, char **argv)
 	/* Cleaner handling of Ctrl-C */
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
+	signal(SIGALRM,sig_handler);
 
 	/* Load and verify BPF application */
 	skel = contxray_bpf__open();

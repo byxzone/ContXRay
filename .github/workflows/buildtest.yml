@@ -31,4 +31,4 @@ jobs:
       - name: Build and Run
         run: |
           make -j$(nproc) contxray
-          sudo ./contxray
+          sudo ./contxray -t 2
