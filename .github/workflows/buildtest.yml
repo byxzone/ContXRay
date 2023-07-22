@@ -1,0 +1,34 @@
+name: buildtest
+
+on:
+  push:
+    branches:
+      - "main"
+    paths: 
+      - '*.c'
+      - '*.h'
+      - '.github/workflows/buildtest.yml'
+      
+  pull_request:
+    branches:
+      - "main"
+    paths: 
+      - '*.c'
+      - '*.h'
+      - '.github/workflows/buildtest.yml'
+    
+jobs:
+  buildtest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies and Init Env
+        run: |
+          sudo apt install libbpf-dev clang llvm libelf-dev libpcap-dev gcc-multilib build-essential
+          git submodule update --init --recursive
+
+      - name: Build and Run
+        run: |
+          make
+          sudo ./contxray
