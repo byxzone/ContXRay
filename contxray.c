@@ -14,6 +14,16 @@
 
 #include "res/syscall_tbl.h"
 
+char logo[] = " \n \
+   _____            _  __   _______              \n \
+  / ____|          | | \\ \\ / /  __ \\             \n \
+ | |     ___  _ __ | |_ \\ V /| |__) |__ _ _   _  \n \
+ | |    / _ \\| '_ \\| __| > < |  _  // _` | | | | \n \
+ | |___| (_) | | | | |_ / . \\| | \\ \\ (_| | |_| | \n \
+  \\_____\\___/|_| |_|\\__/_/ \\_\\_|  \\_\\__,_|\\__, | \n \
+                                           __/ | \n \
+                                          |___/  \n ";
+
 struct contxray_bpf *skel;
 
 static struct env {
@@ -93,12 +103,13 @@ static int handle_syscall_count_map(const struct bpf_map *map){
 
 static int handle_event(void *ctx, void *data, size_t data_sz)
 {
-
+	
 	return 0;
 }
 
 int main(int argc, char **argv)
 {
+	printf("%s\nLoading...",logo);
 	struct ring_buffer *rb = NULL;
 	int err;
 
@@ -145,6 +156,8 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Failed to create ring buffer\n");
 		goto cleanup;
 	}
+ 
+	printf("Done\nContXRay is Running now\n");
 
 	/* Process events */
 	
